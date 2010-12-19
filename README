@@ -1,0 +1,14 @@
+HasRandomized
+=============
+
+HasRandomized provides a simple method to generate a random key attribute. Instance methods for resetting and validating the uniqueness of the key are dynamically generated for each attribute.
+
+Example
+=======
+
+class User < ActiveRecord::Base
+  has_randomized :authentication_id, :method => :hex, :length => 16
+end
+
+
+Copyright (c) 2010 Adam Cuppy of Define: Your Edge, released under the MIT license
