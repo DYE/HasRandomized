@@ -6,7 +6,7 @@ module ActiveRecord
 
         module ClassMethods
             def has_randomized(fields, options = {})
-                configurations = { :method => :hex }
+                configurations = { :method => :hex, :unique => false, :class_name => self.class, :length => 8 }
                 configurations.update(options)
 
                 configurations[:fields] = fields.is_a?(Array) ? fields : [fields]
@@ -15,23 +15,23 @@ module ActiveRecord
                 # create dynamic methods to generate new random strings
                     method = case configurations[:method]
                     when :integer
-                        "rand(10 ** #{configurations[:length] || 8})"
+                        "rand(10 ** #{configurations[:length]})"
                     when :hex
-                        "ActiveSupport::SecureRandom.hex(#{configurations[:length] || 16})"
+                        "ActiveSupport::SecureRandom.hex(#{configurations[:length]})"
                     end
 
                     class_eval <<-CLASS_EVAL, __FILE__, __LINE__ + 1
-                        def _generate_#{field}
+                        define_method("randomize_#{field}".to_sym) do
                           begin
                             random = #{method}
-                            used = #{configurations[:class_name] || self.class}.find_all_by_#{field}(random)
+                            used = #{configurations[:class_name]}.find_all_by_#{field}(random)
                           end while used.count > 0
 
                           self.#{field} = random
                         end
 
                         # privatize the method
-                        private :_generate_#{field}
+                        private :generate_#{field}
 
                     CLASS_EVAL
 
