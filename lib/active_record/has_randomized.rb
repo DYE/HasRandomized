@@ -31,7 +31,7 @@ module ActiveRecord
                         end
 
                         # privatize the method
-                        private :generate_#{field}
+                        private :randomize_#{field}
 
                     CLASS_EVAL
 
