@@ -3,6 +3,8 @@ module ActiveRecord
         def self.included(base)
             base.send :extend, ClassMethods
         end
+        
+        class InvalidRandomizerMethod < StandardError; end
 
         module ClassMethods
             def has_randomized(fields, options = {})
@@ -18,6 +20,8 @@ module ActiveRecord
                         "rand(10 ** #{configurations[:length]})"
                     when :hex
                         "ActiveSupport::SecureRandom.hex(#{configurations[:length]})"
+                    else
+                        raise ::InvalidRandomizerMethod, "Valid methods include :integer, :hex"
                     end
 
                     class_eval <<-CLASS_EVAL, __FILE__, __LINE__ + 1
